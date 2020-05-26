@@ -17,9 +17,12 @@
  */
 function addRandomFact() {
   const facts =
-      ['Gabi is an Israeli citizen', 'Gabi studied Japanese in high school and speaks it at a beginner level', 'Gabi is from Brooklyn, New York', 
-      'Gabi has a cat named Scout, who sadly does not currently live with her', 'Gabi has always wanted to visit Japan', 'Gabi\'s first programming language\
-      was Lisp/Scheme', 'Gabi\'s middle name, Leah, is mispelled on her birth certificate'];
+      [`Gabi is an Israeli citizen`, `Gabi studied Japanese in high school
+      and speaks it at a beginner level`, `Gabi is from Brooklyn, New York`, 
+      `Gabi has a cat named Scout, who sadly does not currently live with her`,
+      `Gabi has always wanted to visit Japan`, `Gabi's first programming
+      language was Lisp/Scheme`, `Gabi's middle name, Leah, is mispelled
+      on her birth certificate`];
 
   // Pick a random fact.
   const fact = facts[Math.floor(Math.random() * facts.length)];
