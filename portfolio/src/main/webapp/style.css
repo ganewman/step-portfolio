@@ -7,3 +7,13 @@
 #greeting-container {
   margin-top: 20px;
 }
+ body {
+     background-color: #ffdbdb;
+ }
+
+img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  height: 500px;
+}
