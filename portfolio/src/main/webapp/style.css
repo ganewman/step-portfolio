@@ -1,9 +1,21 @@
+body {
+     background-color: #fdd;
+ }
+
 #content {
   margin-left: auto;
   margin-right: auto;
   width: 650px;
 }
 
+#selfie {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  height: 500px;
+}
+
 #greeting-container {
   margin-top: 20px;
 }
+
