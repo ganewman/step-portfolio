@@ -1,5 +1,5 @@
 body {
-     background-color: #fdd;
+     background-color: #fee;
  }
 
 #content {
@@ -8,14 +8,36 @@ body {
   width: 650px;
 }
 
-#selfie {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  height: 500px;
+#content h1 {
+  text-align: center;
+  color: #766;
 }
 
-#greeting-container {
+#selfie {
+  display: block;
+  height: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#fact-container {
   margin-top: 20px;
 }
 
+#sidebar {
+  background-color: #fdd;
+  left: 10px;
+  position: fixed;
+  top: 200px;
+  text-align: center;
+  width: 100px;
+}
+
+#sidebar a {
+  color: #988;
+  padding: 10px 15px;
+}
+
+#sidebar a:hover {
+  color: lightgray;
+}
