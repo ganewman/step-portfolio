@@ -1,5 +1,5 @@
 body {
-     background-color: #ffeded;
+     background-color: #fee;
  }
 
 #content {
@@ -10,7 +10,7 @@ body {
 
 #content h1 {
   text-align: center;
-  color: rgb(116, 105, 105);
+  color: #766;
 }
 
 #selfie {
@@ -34,7 +34,7 @@ body {
 }
 
 #sidebar a {
-  color: rgb(155, 143, 143);
+  color: #988;
   padding: 10px 15px;
 }
 
