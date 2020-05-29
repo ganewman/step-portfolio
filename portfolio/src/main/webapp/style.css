@@ -8,14 +8,10 @@ body {
   width: 650px;
 }
 
-#content h1 {
+h1 {
   text-align: center;
   color: #766;
 }
-
-#content h1 {
-  text-align: center;
- }
 
 #selfie {
   display: block;
@@ -67,4 +63,21 @@ td, tr {
 
 th {
     padding: 10px;
+}
+
+#gallery {
+  margin-left: 300px;
+  margin-right: 150px;
+}
+
+#gallery img {
+  height: 500px;
+}
+
+#gallery img:hover {
+    opacity: 70%;
+}
+
+.desc {
+    text-align: center;
 }
