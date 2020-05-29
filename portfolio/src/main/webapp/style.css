@@ -13,7 +13,7 @@ h1 {
   color: #766;
 }
 
-#selfie {
+#home-selfie {
   display: block;
   height: 500px;
   margin-left: auto;
@@ -24,11 +24,19 @@ h1 {
   margin-top: 20px;
 }
 
+#caption-container {
+  left: 50px;
+  position: fixed;
+  text-align: center;
+  top: 400px;
+  width: 200px;
+}
+
 #sidebar {
   background-color: #fdd;
   font-size: 150%;
   height: 125px;
-  left: 75px;
+  left: 100px;
   position: fixed;
   top: 200px;
   text-align: center;
@@ -74,7 +82,7 @@ th {
   height: 500px;
 }
 
-img:hover {
+#gallery img:hover {
   opacity: 70%;
 }
 .patterns {
