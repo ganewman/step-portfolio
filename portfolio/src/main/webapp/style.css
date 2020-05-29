@@ -51,3 +51,20 @@ a {
 a:hover {
   color: lightgray;
 }
+
+ul {
+    list-style-type: circle;
+}
+
+td, tr {
+    border: 1px solid black;
+}
+
+.intam, .bllrmltn {
+    font-size: 120%;
+    padding: 15px;
+}
+
+th {
+    padding: 10px;
+}
