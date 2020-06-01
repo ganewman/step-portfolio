@@ -39,19 +39,18 @@ function displayCaption(img) {
   const id = img.id;
   const imageFacts = 
   {
-	chinesephoenix: `This technically isn't finished yet! A lot of outlining
+	'chinese-phoenix': `This technically isn't finished yet! A lot of outlining
         still needs to be added`,
-    gothiccat: `This piece is a special type of embroidery called 
+    'gothic-cat': `This piece is a special type of embroidery called 
         'Blackwork'.`,
-    headshot: `This picture was taken in my living room with a
+    'headshot': `This picture was taken in my living room with a
         phone camera.`,
-    mitlatin: `This picture was taken at the biggest collegiate competition
+    'mit-latin': `This picture was taken at the biggest collegiate competition
         of the year: MIT Open!`,
-    scoutsitting: `I love him, but this cat is totally evil.`,
-    scoutwindow: `Scout turned four years old this year!`,
-    selfie: `I'm pretty sure this was originally a Snapchat I sent to my
-    boyfriend.`,
-    tuftsstandard: `That's me with my dance partner, Cho, who graduated this
+    'scout-sitting': `I love him, but this cat is totally evil.`,
+    'scout-window': `Scout turned four years old this year!`,
+    'selfie': `I'm pretty sure this was originally a Snapchat.`,
+    'tufts-standard': `That's me with my dance partner, Cho, who graduated this
     year. :( We took this picture because we thought it'd be funny.`
   }
   const caption = imageFacts[id];
