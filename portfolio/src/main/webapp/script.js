@@ -39,7 +39,7 @@ function displayCaption(img) {
   const id = img.id;
   const imageFacts = 
   {
-	'chinese-phoenix': `This technically isn't finished yet! A lot of outlining
+	  'chinese-phoenix': `This technically isn't finished yet! A lot of outlining
         still needs to be added`,
     'gothic-cat': `This piece is a special type of embroidery called 
         'Blackwork'.`,
@@ -51,9 +51,10 @@ function displayCaption(img) {
     'scout-window': `Scout turned four years old this year!`,
     'selfie': `I'm pretty sure this was originally a Snapchat.`,
     'tufts-standard': `That's me with my dance partner, Cho, who graduated this
-    year. :( We took this picture because we thought it'd be funny.`
+        year. :( We took this picture because we thought it'd be funny.`
   }
   const caption = imageFacts[id];
   const captionContainer = document.getElementById('caption-container');
   captionContainer.innerText = "Fun fact: " + caption;
+  
 }
