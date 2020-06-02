@@ -63,7 +63,15 @@ function displayCaption(img) {
  */
 async function getMessageFromServlet(){
   const response = await fetch('/data');
-  const hello = await response.text();
-  document.getElementById('message-container').innerText = hello;
+  const messageData = await response.json();
+  console.log(messageData);
+  const messages = document.getElementById('message-container');
+  messages.innerHTML = '';
+  messageData.forEach(message => messages.appendChild(createParagraphElement(message)));
+}
 
+function createParagraphElement(text){
+  const pElement = document.createElement('p');
+  pElement.innerText = text;
+  return pElement;
 }
