@@ -61,9 +61,9 @@ function displayCaption(img) {
 /**
  * Fetches a greeting from the Java servlet to display
  */
-async function getHello(){
+async function getMessageFromServlet(){
   const response = await fetch('/data');
   const hello = await response.text();
-  document.getElementById('hello-container').innerText = hello;
+  document.getElementById('message-container').innerText = hello;
 
 }
