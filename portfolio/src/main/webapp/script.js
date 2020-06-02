@@ -56,5 +56,14 @@ function displayCaption(img) {
   const caption = imageFacts[id];
   const captionContainer = document.getElementById('caption-container');
   captionContainer.innerText = "Fun fact: " + caption;
-  
+}
+
+/**
+ * Fetches a greeting from the Java servlet to display
+ */
+async function getMessageFromServlet(){
+  const response = await fetch('/data');
+  const hello = await response.text();
+  document.getElementById('message-container').innerText = hello;
+
 }
