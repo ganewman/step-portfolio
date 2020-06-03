@@ -61,7 +61,7 @@ function displayCaption(img) {
 /**
  * Fetches a greeting from the Java servlet to display
  */
-async function getMessageFromServlet(){
+async function getMessageFromServlet() {
   const response = await fetch('/data');
   const messageData = await response.json();
   console.log(messageData);
@@ -72,8 +72,8 @@ async function getMessageFromServlet(){
   });
 }
 
-function createParagraphElement(text){
+function createParagraphElement(text) {
   const paragraphElement = document.createElement('p');
-  pElement.innerText = text;
-  return pElement;
+  paragraphElement.innerText = text;
+  return paragraphElement;
 }
