@@ -67,11 +67,13 @@ async function getMessageFromServlet(){
   console.log(messageData);
   const messages = document.getElementById('message-container');
   messages.innerHTML = '';
-  messageData.forEach(message => messages.appendChild(createParagraphElement(message)));
+  messageData.forEach(message => {
+    messages.appendChild(createParagraphElement(message))
+  });
 }
 
 function createParagraphElement(text){
-  const pElement = document.createElement('p');
+  const paragraphElement = document.createElement('p');
   pElement.innerText = text;
   return pElement;
 }
