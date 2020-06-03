@@ -61,9 +61,19 @@ function displayCaption(img) {
 /**
  * Fetches a greeting from the Java servlet to display
  */
-async function getMessageFromServlet(){
+async function getMessageFromServlet() {
   const response = await fetch('/data');
-  const hello = await response.text();
-  document.getElementById('message-container').innerText = hello;
+  const messageData = await response.json();
+  console.log(messageData);
+  const messages = document.getElementById('message-container');
+  messages.innerHTML = '';
+  messageData.forEach(message => {
+    messages.appendChild(createParagraphElement(message))
+  });
+}
 
+function createParagraphElement(text) {
+  const paragraphElement = document.createElement('p');
+  paragraphElement.innerText = text;
+  return paragraphElement;
 }
