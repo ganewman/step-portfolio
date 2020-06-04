@@ -25,18 +25,18 @@ import java.util.ArrayList;
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
-  private ArrayList<String> messages;
+  private ArrayList<String> comments;
 
   public DataServlet() {
-    messages = new ArrayList<>(3);
-    messages.add("Hello!");
-    messages.add("Nice to meet you!");
-    messages.add("Have a nice day!");
+    comments = new ArrayList<>(3);
+    comments.add("Hello!");
+    comments.add("Nice to meet you!");
+    comments.add("Have a nice day!");
   }
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String json = convertToJson(messages);
+    String json = convertToJson(comments);
     response.setContentType("text/html;");
     response.getWriter().println(json);
   }
