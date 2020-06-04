@@ -29,6 +29,12 @@
       <div id="fact-container"></div>
       <div id="comments">
         <h3>Comments</h3>
+        <form action="/data" method="POST">
+        <textarea name="comment-input">Your comment here</textarea>
+        <input type="hidden" name="page-name" value="/index.html"/>
+        <br/><br/>
+        <input type="submit"/>
+        </form>
         <div id="comments-container"></div>
       </div>
     </div>

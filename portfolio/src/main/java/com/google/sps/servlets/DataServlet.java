@@ -41,6 +41,15 @@ public class DataServlet extends HttpServlet {
     response.getWriter().println(json);
   }
 
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    String userComment = request.getParameter("comment-input");
+    // Gets page the user sent the request from using a hidden form
+    // Will allow redirect to work correctly even if comments section is present on multiple pages
+    String pageToRedirect = request.getParameter("page-name");
+    comments.add(0, userComment); // Display most recent comments first
+    response.sendRedirect(pageToRedirect);
+  }
+
   /** Takes an object and returns a JSON (string) representation of it */
   private String convertToJson(Object obj) {
     Gson gson = new Gson();
