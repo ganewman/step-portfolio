@@ -24,8 +24,13 @@ h1 {
   margin-top: 20px;
 }
 
-#message-container {
+#comments-container {
   margin-top: 20px;
+}
+
+.comment {
+  background-color: #fdd;
+  padding: 5px 5px;
 }
 
 #caption-container {

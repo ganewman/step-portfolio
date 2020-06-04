@@ -59,21 +59,22 @@ function displayCaption(img) {
 }
 
 /**
- * Fetches a greeting from the Java servlet to display
+ * Fetches the comments from the Java servlet to display
  */
-async function getMessageFromServlet() {
+async function getCommentsFromServlet() {
   const response = await fetch('/data');
-  const messageData = await response.json();
-  console.log(messageData);
-  const messages = document.getElementById('message-container');
-  messages.innerHTML = '';
-  messageData.forEach(message => {
-    messages.appendChild(createParagraphElement(message))
+  const commentData = await response.json();
+  console.log(commentData);
+  const comments = document.getElementById('comments-container');
+  comments.innerHTML = '';
+  commentData.forEach(comment => {
+    comments.appendChild(createParagraphElement(comment))
   });
 }
 
 function createParagraphElement(text) {
   const paragraphElement = document.createElement('p');
   paragraphElement.innerText = text;
+  paragraphElement.className = "comment"
   return paragraphElement;
 }
