@@ -30,8 +30,13 @@
       <div id="comments">
         <h3>Comments</h3>
         <form action="/data" method="POST">
-        <input type="text" name="comment-input" value="Your comment here" 
-            onfocus="this.value=''"/>
+        Name:
+        <br/>
+        <input type="text" name="name-input" />
+        <br/><br/>
+        Comment:
+        <br/>
+        <textarea name="comment-input"></textarea>
         <input type="hidden" name="page-name" value="/index.html"/>
         <br/><br/>
         <input type="submit"/>
