@@ -59,6 +59,7 @@ public class DataServlet extends HttpServlet {
     // I've been told to make a pull request before actually writing the code to retrieve
     // data from the database. Therefore I will leave this in so the code still works
     // locally until then.
+    // TODO remove once code is able to read from database
     comments.add(0, userComment);
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
