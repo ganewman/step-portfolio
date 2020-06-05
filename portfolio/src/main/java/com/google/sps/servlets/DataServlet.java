@@ -46,7 +46,6 @@ public class DataServlet extends HttpServlet {
 
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String userComment = request.getParameter("comment-input");
-    // String userName = request.getParameter("comment-name");
     long timestamp = System.currentTimeMillis();
 
     // Uses a hidden form to get the page the user sent the request from
@@ -56,9 +55,7 @@ public class DataServlet extends HttpServlet {
     Entity commentEntity = new Entity("Comment");
     commentEntity.setProperty("text", userComment);
     commentEntity.setProperty("time", timestamp);
-    // I've been told to make a pull request before actually writing the code to retrieve
-    // data from the database. Therefore I will leave this in so the code still works
-    // locally until then.
+    
     // TODO remove once code is able to read from database
     comments.add(0, userComment);
 
