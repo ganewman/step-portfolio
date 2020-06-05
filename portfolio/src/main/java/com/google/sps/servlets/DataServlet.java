@@ -14,6 +14,9 @@
 
 package com.google.sps.servlets;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
 import com.google.gson.Gson;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
@@ -43,10 +46,24 @@ public class DataServlet extends HttpServlet {
 
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String userComment = request.getParameter("comment-input");
+    // String userName = request.getParameter("comment-name");
+    long timestamp = System.currentTimeMillis();
+
     // Uses a hidden form to get the page the user sent the request from
     // Allows redirect to work correctly even if comments section is present on multiple pages
     String pageToRedirect = request.getParameter("page-name");
-    comments.add(0, userComment); // Display most recent comments first
+    
+    Entity commentEntity = new Entity("Comment");
+    commentEntity.setProperty("text", userComment);
+    commentEntity.setProperty("time", timestamp);
+    // I've been told to make a pull request before actually writing the code to retrieve
+    // data from the database. Therefore I will leave this in so the code still works
+    // locally until then.
+    comments.add(0, userComment);
+
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    datastore.put(commentEntity);
+
     response.sendRedirect(pageToRedirect);
   }
 
