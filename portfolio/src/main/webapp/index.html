@@ -29,6 +29,13 @@
       <div id="fact-container"></div>
       <div id="comments">
         <h3>Comments</h3>
+        <form action="/data" method="POST">
+        <input type="text" name="comment-input" value="Your comment here" 
+            onfocus="this.value=''"/>
+        <input type="hidden" name="page-name" value="/index.html"/>
+        <br/><br/>
+        <input type="submit"/>
+        </form>
         <div id="comments-container"></div>
       </div>
     </div>
