@@ -48,21 +48,25 @@ public class DataServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String name = request.getParameter("name-input");
     String content = request.getParameter("comment-input");
-    long time = System.currentTimeMillis();
 
     // Uses a hidden form to get the page the user sent the request from
     // Allows redirect to work correctly even if comments section is present on multiple pages
     String pageToRedirect = request.getParameter("page-name");
     
+    sendCommentToDatabase(name, content);
+
+    response.sendRedirect(pageToRedirect);
+  }
+
+  /** Creates a comment entity and sends it to the Datastore database */
+  private void sendCommentToDatabase(String name, String content) {
     Entity commentEntity = new Entity("Comment");
     commentEntity.setProperty("name", name);
     commentEntity.setProperty("content", content);
-    commentEntity.setProperty("time", time);
+    commentEntity.setProperty("time", System.currentTimeMillis());
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(commentEntity);
-
-    response.sendRedirect(pageToRedirect);
   }
 
   /** Retrieves and returns a list of comments from the Datastore database */
