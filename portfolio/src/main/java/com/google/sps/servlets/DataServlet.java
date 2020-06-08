@@ -46,16 +46,15 @@ public class DataServlet extends HttpServlet {
     String name = request.getParameter("name-input");
     String content = request.getParameter("comment-input");
 
-    // Uses a hidden form to get the page the user sent the request from
-    // Allows redirect to work correctly even if comments section is present on multiple pages
+    // Uses a hidden form to get the page the user sent the request from.
+    // Allows redirect to work correctly even if comments section is present on multiple pages.
     String pageToRedirect = request.getParameter("page-name");
     
     sendCommentToDatabase(name, content);
-
     response.sendRedirect(pageToRedirect);
   }
 
-  /** Creates a comment entity and sends it to the Datastore database */
+  /** Creates a comment entity and sends it to the Datastore database. */
   private void sendCommentToDatabase(String name, String content) {
     Entity commentEntity = new Entity("Comment");
     commentEntity.setProperty("name", name);
@@ -66,7 +65,7 @@ public class DataServlet extends HttpServlet {
     datastore.put(commentEntity);
   }
 
-  /** Retrieves and returns a list of comments from the Datastore database */
+  /** Retrieves and returns a list of comments from the Datastore database. */
   private List<Comment> getCommentsFromDatabase() {
     Query query = new Query("Comment").addSort("time", SortDirection.DESCENDING);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -84,7 +83,7 @@ public class DataServlet extends HttpServlet {
     return comments;
   }
 
-  /** Takes an object and returns a JSON (string) representation of it */
+  /** Returns a JSON (string) representation of an object. */
   private static String convertToJson(Object obj) {
     Gson gson = new Gson();
     String json = gson.toJson(obj);
