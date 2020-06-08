@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
   </head>
-  <body>
+  <body onload="getCommentsFromServlet()">
     <h1>Image Gallery</h1>
     <div id="gallery">
       <img src="/images/headshot.jpg" alt="A professional looking headshot
@@ -27,6 +27,22 @@
       <img src="/images/tuftsstandard.jpeg" alt="A picture of my dance partner
             dipping me at a competition." id="tufts-standard" 
             onclick="displayCaption(this)"/>
+      <div id="comments">
+        <h3>Comments</h3>
+        <form action="/data" method="POST">
+        Name:
+        <br/>
+        <input type="text" name="name-input" />
+        <br/><br/>
+        Comment:
+        <br/>
+        <textarea name="comment-input"></textarea>
+        <input type="hidden" name="page-name" value="/gallery.html"/>
+        <br/><br/>
+        <input type="submit"/>
+        </form>
+        <div id="comments-container"></div>
+      </div>
     </div>
     <div id="sidebar">
       <a href="/index.html">Home</a>
