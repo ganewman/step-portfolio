@@ -25,4 +25,5 @@ public class Comment {
     this.content = content;
     this.time = time;
   }
+  
 }
