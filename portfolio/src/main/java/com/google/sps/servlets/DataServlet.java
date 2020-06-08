@@ -17,6 +17,9 @@ package com.google.sps.servlets;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.gson.Gson;
 import com.google.sps.data.Comment;
 import java.io.IOException;
@@ -25,6 +28,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.List;
 
 /** 
  * Servlet that returns some example content.
@@ -32,14 +36,10 @@ import java.util.ArrayList;
  */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
-  private ArrayList<Comment> comments;
-
-  public DataServlet() {
-    comments = new ArrayList<>();
-  }
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    List<Comment> comments = getCommentsFromDatabase();
     String json = convertToJson(comments);
     response.setContentType("text/html;");
     response.getWriter().println(json);
@@ -59,17 +59,32 @@ public class DataServlet extends HttpServlet {
     commentEntity.setProperty("content", content);
     commentEntity.setProperty("time", time);
 
-    // TODO remove once code is able to read from database
-    comments.add(0, new Comment(name, content, time));
-
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(commentEntity);
 
     response.sendRedirect(pageToRedirect);
   }
 
+  /** Retrieves and returns a list of comments from the Datastore database */
+  private List<Comment> getCommentsFromDatabase() {
+    Query query = new Query("Comment").addSort("time", SortDirection.DESCENDING);
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    PreparedQuery results = datastore.prepare(query);
+
+    List<Comment> comments = new ArrayList<>();
+    for (Entity entity : results.asIterable()) {
+      String name = (String) entity.getProperty("name");
+      String content = (String) entity.getProperty("content");
+      long time = (long) entity.getProperty("time");
+
+      Comment comment = new Comment(name, content, time);
+      comments.add(comment);
+    }
+    return comments;
+  }
+
   /** Takes an object and returns a JSON (string) representation of it */
-  private String convertToJson(Object obj) {
+  private static String convertToJson(Object obj) {
     Gson gson = new Gson();
     String json = gson.toJson(obj);
     return json;
