@@ -68,13 +68,24 @@ async function getCommentsFromServlet() {
   const comments = document.getElementById('comments-container');
   comments.innerHTML = '';
   commentData.forEach(comment => {
-    comments.appendChild(createParagraphElement(comment))
+    comments.appendChild(createCommentDiv(comment))
+    comments.appendChild(document.createElement('br'));
   });
 }
 
-function createParagraphElement(text) {
-  const paragraphElement = document.createElement('p');
-  paragraphElement.innerText = text;
-  paragraphElement.className = "comment"
-  return paragraphElement;
+function createCommentDiv(commentObj) {
+  const commentDiv = document.createElement('div');
+  commentDiv.className = "comment";
+
+  const nameElement = document.createElement('h4');
+  nameElement.innerText = commentObj.name;
+  commentDiv.appendChild(nameElement);
+
+  const contentElement = document.createElement('p');
+  contentElement.innerText = commentObj.content;
+  commentDiv.appendChild(contentElement);
+
+  // TODO: do something useful with the time information
+
+  return commentDiv;
 }
