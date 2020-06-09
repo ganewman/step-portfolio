@@ -80,10 +80,10 @@ function createCommentDiv(commentObj) {
   const nameElement = document.createElement('h4');
   nameElement.innerText = commentObj.name;
   nameElement.className = "tooltip";
-  const tooltipElement = document.createElement('span');
-  tooltipElement.className = "tooltiptext";
-  tooltipElement.innerText = commentObj.time;
-  nameElement.appendChild(tooltipElement);
+  const toolTipElement = document.createElement('span');
+  toolTipElement.className = "tooltip-text";
+  toolTipElement.innerText = commentObj.time;
+  nameElement.appendChild(toolTipElement);
   commentDiv.appendChild(nameElement);
 
   const contentElement = document.createElement('p');

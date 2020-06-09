@@ -110,7 +110,7 @@ button {
   position: relative;
 }
 
-.tooltip .tooltiptext {
+.tooltip .tooltip-text {
   background-color: black;
   border-radius: 6px;
   color: #fff;
@@ -123,6 +123,6 @@ button {
   z-index: 1;
 }
 
-.tooltip:hover .tooltiptext {
+.tooltip:hover .tooltip-text {
   visibility: visible;
 }
