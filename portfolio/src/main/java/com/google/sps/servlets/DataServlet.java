@@ -48,7 +48,7 @@ public class DataServlet extends HttpServlet {
 
     // Uses a hidden form to get the page the user sent the request from.
     // Allows redirect to work correctly even if comments section is present on multiple pages.
-    String pageToRedirect = request.getParameter("page-name");
+    String pageToRedirect = request.getParameter("page-name") + "#comments";
     
     sendCommentToDatabase(name, content);
     response.sendRedirect(pageToRedirect);

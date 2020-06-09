@@ -79,13 +79,18 @@ function createCommentDiv(commentObj) {
 
   const nameElement = document.createElement('h4');
   nameElement.innerText = commentObj.name;
+  nameElement.className = "tooltip";
+  const toolTipElement = document.createElement('span');
+  toolTipElement.className = "tooltip-text";
+  toolTipElement.innerText = commentObj.time;
+  nameElement.appendChild(toolTipElement);
   commentDiv.appendChild(nameElement);
 
   const contentElement = document.createElement('p');
   contentElement.innerText = commentObj.content;
   commentDiv.appendChild(contentElement);
 
-  // TODO: do something useful with the time information
+  // TODO: Convert from fairly useless MS time to hour/minute.
 
   return commentDiv;
 }

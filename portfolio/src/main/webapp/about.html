@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
   </head>
-  <body>
+  <body onload="getCommentsFromServlet()">
     <div id="content">
       <h1>About Me</h1>
       <h2>Here's a more detailed look at what makes me me!</h2>
@@ -70,7 +70,24 @@
           he's been staying with my cousin. But he's still a very cute and
           happy kitty! There are some pictures of him on the gallery page.
       </p>
-      <h3>
+      <!-- TODO: Find a way to make comments and navbar common to all pages
+          without actually repeating HTML code, as it is now. -->
+      <div id="comments">
+        <h3>Comments</h3>
+        <form action="/data" method="POST">
+          Name:
+          <br>
+          <input type="text" name="name-input" />
+          <br><br>
+          Comment:
+          <br>
+          <textarea name="comment-input"></textarea>
+          <input type="hidden" name="page-name" value="/about.html"/>
+          <br><br>
+          <input type="submit"/>
+        </form>
+        <div id="comments-container"></div>
+      </div>
     </div>
     <div id="sidebar">
       <a href="/index.html">Home</a>

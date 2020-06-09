@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
   </head>
-  <body>
+  <body onload="getCommentsFromServlet()">
     <div id="content">
       <h1>My Hobbies</h1>
       <h3>Here is a list of some of my many hobbies (in no particular order): </h3>
@@ -138,6 +138,24 @@
         <li>One Hundred Years of Solitude by Gabriel Garcia
             Marquez</li>
       </ul>
+      <!-- TODO: Find a way to make comments and navbar common to all pages
+          without actually repeating HTML code, as it is now. -->
+      <div id="comments">
+        <h3>Comments</h3>
+        <form action="/data" method="POST">
+          Name:
+          <br>
+          <input type="text" name="name-input" />
+          <br><br>
+          Comment:
+          <br>
+          <textarea name="comment-input"></textarea>
+          <input type="hidden" name="page-name" value="/hobbies.html"/>
+          <br><br>
+          <input type="submit"/>
+        </form>
+        <div id="comments-container"></div>
+      </div>
     </div>
     <div id="sidebar">
       <a href="/index.html">Home</a>
