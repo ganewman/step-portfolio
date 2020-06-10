@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html>
 <meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1.0">
   <head>
     <title>About Me</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
   </head>
-  <body onload="getCommentsFromServlet()">
+  <body onload="loadMap()">
     <div id="content">
       <h1>About Me</h1>
       <h2>Here's a more detailed look at what makes me me!</h2>
@@ -15,6 +16,7 @@
       <h4><a href="#school">School</a></h4>
       <h4><a href="#languages">Languages</a></h4>
       <h4><a href="#pets">Pets</a></h4>
+      <h4><a href="#food">Food</a></h4>
       <h3 id="childhood">Childhood</h3>
       <p>My full name is Gabrielle Newman and I'm 20 years old.
           I grew up in Brooklyn, New York. My family moved around
@@ -70,6 +72,13 @@
           he's been staying with my cousin. But he's still a very cute and
           happy kitty! There are some pictures of him on the gallery page.
       </p>
+      <h3 id="food">Food</h3>
+      <p>I love to eat and try out new foods! I've been known to be a picky
+          eater, but there are still a lot of thing I will try out at least
+          once. Here's a map with some of my favorite restaurants in my
+          hometown of NYC!
+      </p>
+      <div id="map"></div>
       <!-- TODO: Find a way to make comments and navbar common to all pages
           without actually repeating HTML code, as it is now. -->
       <div id="comments">
