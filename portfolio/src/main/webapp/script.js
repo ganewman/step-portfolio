@@ -15,6 +15,10 @@
 // Loads the comments on every page without having to redundantly specify in HTML.
 window.onload = function() {
   getCommentsFromServlet();
+  // Only load map on pages where the "map" div is present.
+  if (document.getElementById('map') !== null) {
+    loadMap();
+  }
 }
 
 /**
@@ -101,21 +105,20 @@ function createCommentDiv(commentObj) {
 }
 
 function loadMap() {
-  // Create the script tag, set the appropriate attributes
-  var script = document.createElement('script');
-  script.src = 'https://maps.googleapis.com/maps/api/js?key=' + apiKey + '&callback=initMap';
+  let script = document.createElement('script');
+  script.src = 'https://maps.googleapis.com/maps/api/js?key='
+      + apiKey + '&callback=initMap';
   script.defer = true;
   script.async = true;
 
-  // Attach your callback function to the `window` object
+  // Attach the callback function to the `window` object
+  // Executes once the API is loaded and available.
   window.initMap = function() {
-    // JS API is loaded and available
     map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 40.730610, lng: -73.935242},
     zoom: 12
     });
   };
 
-  // Append the 'script' element to 'head'
   document.head.appendChild(script);
 }
