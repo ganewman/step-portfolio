@@ -105,7 +105,7 @@ function createCommentDiv(commentObj) {
 }
 
 function loadMap() {
-  var script = document.createElement('script');
+  let script = document.createElement('script');
   script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyAqY8BqWGKw-Nr
       wfYOeoOATcbUZkQV1R2w&callback=initMap`;
   script.defer = true;
