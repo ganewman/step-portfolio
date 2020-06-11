@@ -15,6 +15,10 @@
 // Loads the comments on every page without having to redundantly specify in HTML.
 window.onload = function() {
   getCommentsFromServlet();
+  // Only load map on pages where the "map" div is present.
+  if (document.getElementById('map') !== null) {
+    loadMap();
+  }
 }
 
 /**
