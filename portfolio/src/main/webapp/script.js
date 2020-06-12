@@ -14,12 +14,55 @@
 
 // Loads the comments on every page without having to redundantly specify in HTML.
 window.onload = function() {
-  getCommentsFromServlet();
+  loadCommonFeatures();
   // Only load map on pages where the "map" div is present.
   if (document.getElementById('map') !== null) {
     loadMap();
   }
 }
+
+/** Loads HTML features which are common to all pages of the website */
+// TODO: Possibly find a way to do this which doesn't rebuild all of these
+// HTML elements each time the page refreshes (there is sometimes lag now).
+function loadCommonFeatures() {
+  loadSidebar();
+  loadCommentForm();
+  loadCommenHistory();
+}
+
+/** Generates the HTML for the navigation bar. */
+function loadSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  sidebar.innerHTML = '';
+  sidebar.appendChild(createLink('Home', '/index.html'));
+  sidebar.appendChild(document.createElement('br'));
+  sidebar.appendChild(createLink('About Me', '/about.html'));
+    sidebar.appendChild(document.createElement('br'));
+  sidebar.appendChild(createLink('Gallery', '/gallery.html'));
+    sidebar.appendChild(document.createElement('br'));
+  sidebar.appendChild(createLink('Hobbies', '/hobbies.html'));
+}
+
+/** Generates the HTML for the form where users input comments. */
+function loadCommentForm() {
+
+}
+
+/**
+ * Fetches the comments from the Java servlet to display.
+ */
+async function loadCommentHistory() {
+  const response = await fetch('/data');
+  const commentData = await response.json();
+  console.log(commentData);
+  const comments = document.getElementById('comments-container');
+  comments.innerHTML = '';
+  commentData.forEach(comment => {
+    comments.appendChild(createCommentDiv(comment))
+    comments.appendChild(document.createElement('br'));
+  });
+}
+
 
 /**
  * Adds a random fun fact to the page.
@@ -67,21 +110,6 @@ function displayCaption(img) {
   captionContainer.innerText = "Fun fact: " + caption;
 }
 
-/**
- * Fetches the comments from the Java servlet to display
- */
-async function getCommentsFromServlet() {
-  const response = await fetch('/data');
-  const commentData = await response.json();
-  console.log(commentData);
-  const comments = document.getElementById('comments-container');
-  comments.innerHTML = '';
-  commentData.forEach(comment => {
-    comments.appendChild(createCommentDiv(comment))
-    comments.appendChild(document.createElement('br'));
-  });
-}
-
 function createCommentDiv(commentObj) {
   const commentDiv = document.createElement('div');
   commentDiv.className = "comment";
@@ -102,6 +130,13 @@ function createCommentDiv(commentObj) {
   // TODO: Convert from fairly useless MS time to hour/minute.
 
   return commentDiv;
+}
+
+function createLink(text, url) {
+  let link = document.createElement('a');
+  link.href = url;
+  link.text = text;
+  return link;
 }
 
 function loadMap() {
