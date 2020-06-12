@@ -200,13 +200,11 @@ function loadMap() {
 // for use in placing markers.
 // TODO: Possibly use Places API instead; couldn't get it working earlier.
 function placeMarker(address, name, map) {
-  let latLng = {};
   geocoder = new google.maps.Geocoder();
   geocoder.geocode( {'address' : address}, function(results, status) {
     if (status == 'OK') {
       let location = results[0].geometry.location;
-      latLng = {lat : location.lat(), lng: location.lng()};
-      console.log(latLng);
+      let latLng = {lat : location.lat(), lng: location.lng()};
       let marker = new google.maps.Marker({
         position: latLng,
         title: name,
