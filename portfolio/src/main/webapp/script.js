@@ -27,7 +27,7 @@ window.onload = function() {
 function loadCommonFeatures() {
   loadSidebar();
   loadCommentForm();
-  loadCommenHistory();
+  loadCommentHistory();
 }
 
 /** Generates the HTML for the navigation bar. */
@@ -37,15 +37,48 @@ function loadSidebar() {
   sidebar.appendChild(createLink('Home', '/index.html'));
   sidebar.appendChild(document.createElement('br'));
   sidebar.appendChild(createLink('About Me', '/about.html'));
-    sidebar.appendChild(document.createElement('br'));
+  sidebar.appendChild(document.createElement('br'));
   sidebar.appendChild(createLink('Gallery', '/gallery.html'));
-    sidebar.appendChild(document.createElement('br'));
+  sidebar.appendChild(document.createElement('br'));
   sidebar.appendChild(createLink('Hobbies', '/hobbies.html'));
 }
 
 /** Generates the HTML for the form where users input comments. */
+// This is horrific and ugly but there's no particularly good way to
+// break it up. 
 function loadCommentForm() {
-
+  const commentForm = document.getElementById("comments-form-container");
+  const header = document.createElement('h3');
+  header.innerText = "Comments";
+  commentForm.appendChild(header);
+  const form = document.createElement('form');
+  form.action = '/data';
+  form.method = 'POST';
+  form.append('Name:');
+  form.appendChild(document.createElement('br'));
+  const nameInput = document.createElement('input');
+  nameInput.type = 'text';
+  nameInput.name = 'name-input';
+  form.appendChild(nameInput);
+  form.appendChild(document.createElement('br'));
+  form.appendChild(document.createElement('br'));
+  form.append('Comment:');
+  form.appendChild(document.createElement('br'));
+  const commentInput = document.createElement('textarea');
+  commentInput.name = 'comment-input';
+  form.appendChild(commentInput);
+  const pageName = document.createElement('input');
+  pageName.type = 'hidden';
+  pageName.name = 'page-name';
+  pageName.value = getCurrentPageName();
+  console.log(pageName.value);
+  form.appendChild(pageName);
+  form.appendChild(document.createElement('br'));
+  form.appendChild(document.createElement('br'));
+  const submit = document.createElement('input');
+  submit.type = 'submit';
+  form.appendChild(submit);
+  commentForm.appendChild(form);
 }
 
 /**
@@ -156,4 +189,17 @@ function loadMap() {
   };
 
   document.head.appendChild(script);
+}
+
+function getCurrentPageName() {
+  const url = document.URL;
+  let retStr = '/index.html';
+  // Do not include index in list, as it is the default.
+  const pages = ['/about.html', '/gallery.html', '/hobbies.html'];
+  pages.forEach((page) => {
+    if (url.includes(page)) {
+      retStr = page;
+    }
+  });
+  return retStr;
 }

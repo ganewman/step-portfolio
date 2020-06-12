@@ -27,22 +27,8 @@
       <p>Click here to get a random fact about Gabi:</p>
       <button onclick="addRandomFact()">Fun Fact!</button>
       <div id="fact-container"></div>
-      <!-- TODO: Find a way to make comments and navbar common to all pages
-          without actually repeating HTML code, as it is now. -->
       <div id="comments">
-        <h3>Comments</h3>
-        <form action="/data" method="POST">
-          Name:
-          <br>
-          <input type="text" name="name-input" />
-          <br><br>
-          Comment:
-          <br>
-          <textarea name="comment-input"></textarea>
-          <input type="hidden" name="page-name" value="/index.html"/>
-          <br><br>
-          <input type="submit"/>
-        </form>
+        <div id="comments-form-container"></div>
         <div id="comments-container"></div>
       </div>
     </div>
