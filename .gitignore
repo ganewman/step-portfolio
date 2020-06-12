@@ -1,2 +1,5 @@
 target/
 .idea
+
+# Ignore file containing API key
+config.js
