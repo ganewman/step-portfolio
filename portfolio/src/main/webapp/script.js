@@ -21,9 +21,11 @@ window.onload = function() {
   }
 }
 
-/** Loads HTML features which are common to all pages of the website */
-// TODO: Possibly find a way to do this which doesn't rebuild all of these
-// HTML elements each time the page refreshes (there is sometimes lag now).
+/** 
+ * Loads HTML features which are common to all pages of the website.
+ * TODO: Possibly find a way to do this which doesn't rebuild all of these
+ * HTML elements each time the page refreshes (there is sometimes lag now).
+ */
 function loadCommonFeatures() {
   loadSidebar();
   loadCommentForm();
@@ -44,8 +46,6 @@ function loadSidebar() {
 }
 
 /** Generates the HTML for the form where users input comments. */
-// This is horrific and ugly but there's no particularly good way to
-// break it up. 
 function loadCommentForm() {
   const commentForm = document.getElementById("comments-form-container");
   const header = document.createElement('h3');
