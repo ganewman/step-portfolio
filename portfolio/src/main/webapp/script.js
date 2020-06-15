@@ -143,6 +143,7 @@ function displayCaption(img) {
   captionContainer.innerText = "Fun fact: " + caption;
 }
 
+
 function createCommentDiv(commentObj) {
   const commentDiv = document.createElement('div');
   commentDiv.className = "comment";
@@ -174,8 +175,8 @@ function createLink(text, url) {
 
 function loadMap() {
   let script = document.createElement('script');
-  script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyAqY8BqWGKw-Nr
-      wfYOeoOATcbUZkQV1R2w&callback=initMap`;
+  script.src = 'https://maps.googleapis.com/maps/api/js?key='
+      + apiKey + '&callback=initMap';
   script.defer = true;
   script.async = true;
 
@@ -183,12 +184,35 @@ function loadMap() {
   // Executes once the API is loaded and available.
   window.initMap = function() {
     map = new google.maps.Map(document.getElementById('map'), {
-    center: {lat: 40.730610, lng: -73.935242},
-    zoom: 12
+      center: {lat: 40.730610, lng: -73.935242},
+      zoom: 12
     });
-  };
+
+    // TODO: Retrieve list of names/addresses from back end.
+    let address = "132 W 31st St, New York, NY 10001";
+    placeMarker(address, "Ichiran Ramen", map);
+  }
 
   document.head.appendChild(script);
+}
+
+// Uses the Geocoding API to get the Latitude/Longitude of an address,
+// for use in placing markers.
+// TODO: Possibly use Places API instead; couldn't get it working earlier.
+function placeMarker(address, name, map) {
+  geocoder = new google.maps.Geocoder();
+  geocoder.geocode( {'address' : address}, function(results, status) {
+    if (status == 'OK') {
+      let location = results[0].geometry.location;
+      let latLng = {lat : location.lat(), lng: location.lng()};
+      let marker = new google.maps.Marker({
+        position: latLng,
+        title: name,
+        visible: true
+      });
+      marker.setMap(map);
+    }
+  });
 }
 
 function getCurrentPageName() {
