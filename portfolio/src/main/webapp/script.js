@@ -12,6 +12,91 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Loads the comments on every page without having to redundantly specify in HTML.
+window.onload = function() {
+  loadCommonFeatures();
+  // Only load map on pages where the "map" div is present.
+  if (document.getElementById('map') !== null) {
+    loadMap();
+  }
+}
+
+/** 
+ * Loads HTML features which are common to all pages of the website.
+ * TODO: Possibly find a way to do this which doesn't rebuild all of these
+ * HTML elements each time the page refreshes (there is sometimes lag now).
+ */
+function loadCommonFeatures() {
+  loadSidebar();
+  loadCommentForm();
+  loadCommentHistory();
+}
+
+/** Generates the HTML for the navigation bar. */
+function loadSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  sidebar.innerHTML = '';
+  sidebar.appendChild(createLink('Home', '/index.html'));
+  sidebar.appendChild(document.createElement('br'));
+  sidebar.appendChild(createLink('About Me', '/about.html'));
+  sidebar.appendChild(document.createElement('br'));
+  sidebar.appendChild(createLink('Gallery', '/gallery.html'));
+  sidebar.appendChild(document.createElement('br'));
+  sidebar.appendChild(createLink('Hobbies', '/hobbies.html'));
+}
+
+/** Generates the HTML for the form where users input comments. */
+function loadCommentForm() {
+  const commentForm = document.getElementById("comments-form-container");
+  const header = document.createElement('h3');
+  header.innerText = "Comments";
+  commentForm.appendChild(header);
+  const form = document.createElement('form');
+  form.action = '/data';
+  form.method = 'POST';
+  form.append('Name:');
+  form.appendChild(document.createElement('br'));
+  const nameInput = document.createElement('input');
+  nameInput.type = 'text';
+  nameInput.name = 'name-input';
+  form.appendChild(nameInput);
+  form.appendChild(document.createElement('br'));
+  form.appendChild(document.createElement('br'));
+  form.append('Comment:');
+  form.appendChild(document.createElement('br'));
+  const commentInput = document.createElement('textarea');
+  commentInput.name = 'comment-input';
+  form.appendChild(commentInput);
+  const pageName = document.createElement('input');
+  pageName.type = 'hidden';
+  pageName.name = 'page-name';
+  pageName.value = getCurrentPageName();
+  console.log(pageName.value);
+  form.appendChild(pageName);
+  form.appendChild(document.createElement('br'));
+  form.appendChild(document.createElement('br'));
+  const submit = document.createElement('input');
+  submit.type = 'submit';
+  form.appendChild(submit);
+  commentForm.appendChild(form);
+}
+
+/**
+ * Fetches the comments from the Java servlet to display.
+ */
+async function loadCommentHistory() {
+  const response = await fetch('/data');
+  const commentData = await response.json();
+  console.log(commentData);
+  const comments = document.getElementById('comments-container');
+  comments.innerHTML = '';
+  commentData.forEach(comment => {
+    comments.appendChild(createCommentDiv(comment))
+    comments.appendChild(document.createElement('br'));
+  });
+}
+
+
 /**
  * Adds a random fun fact to the page.
  */
@@ -58,20 +143,6 @@ function displayCaption(img) {
   captionContainer.innerText = "Fun fact: " + caption;
 }
 
-/**
- * Fetches the comments from the Java servlet to display
- */
-async function getCommentsFromServlet() {
-  const response = await fetch('/data');
-  const commentData = await response.json();
-  console.log(commentData);
-  const comments = document.getElementById('comments-container');
-  comments.innerHTML = '';
-  commentData.forEach(comment => {
-    comments.appendChild(createCommentDiv(comment))
-    comments.appendChild(document.createElement('br'));
-  });
-}
 
 function createCommentDiv(commentObj) {
   const commentDiv = document.createElement('div');
@@ -93,4 +164,66 @@ function createCommentDiv(commentObj) {
   // TODO: Convert from fairly useless MS time to hour/minute.
 
   return commentDiv;
+}
+
+function createLink(text, url) {
+  let link = document.createElement('a');
+  link.href = url;
+  link.text = text;
+  return link;
+}
+
+function loadMap() {
+  let script = document.createElement('script');
+  script.src = 'https://maps.googleapis.com/maps/api/js?key='
+      + apiKey + '&callback=initMap';
+  script.defer = true;
+  script.async = true;
+
+  // Attach the callback function to the `window` object
+  // Executes once the API is loaded and available.
+  window.initMap = function() {
+    map = new google.maps.Map(document.getElementById('map'), {
+      center: {lat: 40.730610, lng: -73.935242},
+      zoom: 12
+    });
+
+    // TODO: Retrieve list of names/addresses from back end.
+    let address = "132 W 31st St, New York, NY 10001";
+    placeMarker(address, "Ichiran Ramen", map);
+  }
+
+  document.head.appendChild(script);
+}
+
+// Uses the Geocoding API to get the Latitude/Longitude of an address,
+// for use in placing markers.
+// TODO: Possibly use Places API instead; couldn't get it working earlier.
+function placeMarker(address, name, map) {
+  geocoder = new google.maps.Geocoder();
+  geocoder.geocode( {'address' : address}, function(results, status) {
+    if (status == 'OK') {
+      let location = results[0].geometry.location;
+      let latLng = {lat : location.lat(), lng: location.lng()};
+      let marker = new google.maps.Marker({
+        position: latLng,
+        title: name,
+        visible: true
+      });
+      marker.setMap(map);
+    }
+  });
+}
+
+function getCurrentPageName() {
+  const url = document.URL;
+  let retStr = '/index.html';
+  // Do not include index in list, as it is the default.
+  const pages = ['/about.html', '/gallery.html', '/hobbies.html'];
+  pages.forEach((page) => {
+    if (url.includes(page)) {
+      retStr = page;
+    }
+  });
+  return retStr;
 }

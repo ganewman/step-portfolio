@@ -126,3 +126,7 @@ button {
 .tooltip:hover .tooltip-text {
   visibility: visible;
 }
+
+#map {
+  height: 400px;
+}
