@@ -40,7 +40,7 @@ function loadMap() {
 function placeMarker(query, map) {
   const request = {
     query: query,
-    fields: ['name', 'geometry'],
+    fields: ['name', 'geometry', 'formatted_address'],
   };
 
   const service = new google.maps.places.PlacesService(map);
@@ -53,9 +53,21 @@ function placeMarker(query, map) {
       const marker = new google.maps.Marker({
         position: latLng,
         title: results[0].name,
-        visible: true
+        visible: true,
+        map: map
       });
-      marker.setMap(map);
+      const contentString = '<div class="info-window">' +
+            '<h1>' + results[0].name+ '</h1>'+
+            '<p>' + results[0].formatted_address + '</p>'
+            '</div>';
+      let infowindow = new google.maps.InfoWindow({
+        content: contentString,
+        maxWidth: 150
+      });
+
+      marker.addListener('click', function() {
+        infowindow.open(map, marker);
+      });
     }
   });
 }
