@@ -33,6 +33,7 @@ function loadMap() {
   document.head.appendChild(script);
 }
 
+let openWindow = false;
 
 /** Uses the Places API to find a place and place a marker there.*/
 function placeMarker(query, map) {
@@ -58,13 +59,18 @@ function placeMarker(query, map) {
             '<h1>' + results[0].name+ '</h1>'+
             '<p>' + results[0].formatted_address + '</p>'
             '</div>';
-      let infowindow = new google.maps.InfoWindow({
+      let infoWindow = new google.maps.InfoWindow({
         content: contentString,
         maxWidth: 150
       });
 
       marker.addListener('click', function() {
-        infowindow.open(map, marker);
+        if (openWindow) {
+          openWindow.close();
+          openWindow = false;
+        }
+        infoWindow.open(map, marker);
+        openWindow = infoWindow;
       });
     }
   });
