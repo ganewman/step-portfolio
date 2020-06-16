@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/** Allows for loading of map and markers on the 'About Me' page. */
+
 function loadMap() {
   const script = document.createElement('script');
   script.src = 'https://maps.googleapis.com/maps/api/js?key='
