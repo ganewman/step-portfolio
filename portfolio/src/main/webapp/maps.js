@@ -36,7 +36,7 @@ function loadMap() {
 let openWindow = false;
 
 /** Uses the Places API to find a place and place a marker there.*/
-function placeMarker(query, map) {
+function placeMarker(query, comment, map) {
   const request = {
     query: query,
     fields: ['name', 'geometry', 'formatted_address'],
@@ -56,11 +56,12 @@ function placeMarker(query, map) {
       });
       const contentString = '<div class="info-window">' +
             '<h1>' + results[0].name+ '</h1>'+
-            '<p>' + results[0].formatted_address + '</p>'
+            '<p><b>' + results[0].formatted_address + '</b></p>'
+            + '<p>' + comment + '</p>' +
             '</div>';
       let infoWindow = new google.maps.InfoWindow({
         content: contentString,
-        maxWidth: 150
+        maxWidth: 200
       });
 
       marker.addListener('click', function() {
@@ -81,6 +82,6 @@ function placeMarker(query, map) {
 async function loadPlaceQueries(map) {
   const response = await fetch('/map-data');
   const placeData = await response.json();
-  placeData.forEach(place => placeMarker(place, map));
+  placeData.forEach(place => placeMarker(place.query, place.comment, map));
 }
 
