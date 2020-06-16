@@ -15,7 +15,6 @@
 package com.google.sps.data;
 
 /** Stores data about a particular place to be displayed on the map. */
-
 public class Place {
   private final String query;
   private final String comment;
