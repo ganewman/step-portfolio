@@ -27,9 +27,7 @@ function loadMap() {
       zoom: 12
     });
 
-    // TODO: Retrieve list of names/addresses from back end.
-    const query = "Ichiran";
-    placeMarker(query, map);
+    loadPlaceQueries(map);
   }
 
   document.head.appendChild(script);
@@ -70,5 +68,14 @@ function placeMarker(query, map) {
       });
     }
   });
+}
+
+/**
+ * Fetches the place queries from the Java servlet and places markers.
+ */
+async function loadPlaceQueries(map) {
+  const response = await fetch('/map-data');
+  const placeData = await response.json();
+  placeData.forEach(place => placeMarker(place, map));
 }
 
