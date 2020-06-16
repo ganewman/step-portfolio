@@ -84,7 +84,7 @@ public class DataServlet extends HttpServlet {
   }
 
   /** Returns a JSON (string) representation of an object. */
-  private static String convertToJson(Object obj) {
+  public static String convertToJson(Object obj) {
     Gson gson = new Gson();
     String json = gson.toJson(obj);
     return json;
