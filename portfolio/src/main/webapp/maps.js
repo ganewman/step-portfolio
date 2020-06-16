@@ -29,14 +29,13 @@ function loadMap() {
       zoom: 12
     });
 
-    // TODO: Retrieve list of names/addresses from back end.
-    const query = "Ichiran";
-    placeMarker(query, map);
+    loadPlaceQueries(map);
   }
 
   document.head.appendChild(script);
 }
 
+let openWindow = false;
 
 /** Uses the Places API to find a place and place a marker there.*/
 function placeMarker(query, map) {
@@ -49,7 +48,6 @@ function placeMarker(query, map) {
 
   service.findPlaceFromQuery(request, function(results, status) {
     if (status === google.maps.places.PlacesServiceStatus.OK) {
-      console.log(results[0]);
       const location = results[0].geometry.location;
       const latLng = {lat : location.lat(), lng: location.lng()};
       const marker = new google.maps.Marker({
@@ -62,15 +60,29 @@ function placeMarker(query, map) {
             '<h1>' + results[0].name+ '</h1>'+
             '<p>' + results[0].formatted_address + '</p>'
             '</div>';
-      let infowindow = new google.maps.InfoWindow({
+      let infoWindow = new google.maps.InfoWindow({
         content: contentString,
         maxWidth: 150
       });
 
       marker.addListener('click', function() {
-        infowindow.open(map, marker);
+        if (openWindow) {
+          openWindow.close();
+          openWindow = false;
+        }
+        infoWindow.open(map, marker);
+        openWindow = infoWindow;
       });
     }
   });
+}
+
+/**
+ * Fetches the place queries from the Java servlet and places markers.
+ */
+async function loadPlaceQueries(map) {
+  const response = await fetch('/map-data');
+  const placeData = await response.json();
+  placeData.forEach(place => placeMarker(place, map));
 }
 

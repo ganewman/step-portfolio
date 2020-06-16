@@ -87,7 +87,6 @@ function loadCommentForm() {
 async function loadCommentHistory() {
   const response = await fetch('/data');
   const commentData = await response.json();
-  console.log(commentData);
   const comments = document.getElementById('comments-container');
   comments.innerHTML = '';
   commentData.forEach(comment => {
