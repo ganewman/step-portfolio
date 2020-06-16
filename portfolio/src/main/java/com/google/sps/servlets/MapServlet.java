@@ -42,7 +42,7 @@ public class MapServlet extends HttpServlet {
     response.getWriter().println(json);
   }
 
-    /** Retrieves and returns a list of place queries from the Datastore database. */
+  /** Retrieves and returns a list of place queries from the Datastore database. */
   private List<String> getPlacesFromDatabase() {
     Query query = new Query("Place");
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();

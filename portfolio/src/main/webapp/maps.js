@@ -46,7 +46,6 @@ function placeMarker(query, map) {
 
   service.findPlaceFromQuery(request, function(results, status) {
     if (status === google.maps.places.PlacesServiceStatus.OK) {
-      console.log(results[0]);
       const location = results[0].geometry.location;
       const latLng = {lat : location.lat(), lng: location.lng()};
       const marker = new google.maps.Marker({
