@@ -13,7 +13,7 @@
 // limitations under the License.
 
 function loadMap() {
-  let script = document.createElement('script');
+  const script = document.createElement('script');
   script.src = 'https://maps.googleapis.com/maps/api/js?key='
       + apiKey + '&callback=initMap&libraries=places';
   script.defer = true;
@@ -28,25 +28,31 @@ function loadMap() {
     });
 
     // TODO: Retrieve list of names/addresses from back end.
-    let address = "132 W 31st St, New York, NY 10001";
-    placeMarker(address, "Ichiran Ramen", map);
+    const query = "Ichiran";
+    placeMarker(query, map);
   }
 
   document.head.appendChild(script);
 }
 
-// Uses the Geocoding API to get the Latitude/Longitude of an address,
-// for use in placing markers.
-// TODO: Possibly use Places API instead; couldn't get it working earlier.
-function placeMarker(address, name, map) {
-  geocoder = new google.maps.Geocoder();
-  geocoder.geocode( {'address' : address}, function(results, status) {
-    if (status == 'OK') {
-      let location = results[0].geometry.location;
-      let latLng = {lat : location.lat(), lng: location.lng()};
-      let marker = new google.maps.Marker({
+
+/** Uses the Places API to find a place and place a marker there.*/
+function placeMarker(query, map) {
+  const request = {
+    query: query,
+    fields: ['name', 'geometry'],
+  };
+
+  const service = new google.maps.places.PlacesService(map);
+
+  service.findPlaceFromQuery(request, function(results, status) {
+    if (status === google.maps.places.PlacesServiceStatus.OK) {
+      console.log(results[0]);
+      const location = results[0].geometry.location;
+      const latLng = {lat : location.lat(), lng: location.lng()};
+      const marker = new google.maps.Marker({
         position: latLng,
-        title: name,
+        title: results[0].name,
         visible: true
       });
       marker.setMap(map);
