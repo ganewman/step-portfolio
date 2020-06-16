@@ -21,6 +21,7 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.sps.servlets.DataServlet;
+import com.google.sps.data.Place;
 import com.google.gson.Gson;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
@@ -36,22 +37,23 @@ public class MapServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    List<String> places = getPlacesFromDatabase();
+    List<Place> places = getPlacesFromDatabase();
     String json = DataServlet.convertToJson(places);
     response.setContentType("text/html;");
     response.getWriter().println(json);
   }
 
   /** Retrieves and returns a list of place queries from the Datastore database. */
-  private List<String> getPlacesFromDatabase() {
+  private List<Place> getPlacesFromDatabase() {
     Query query = new Query("Place");
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
 
-    List<String> places = new ArrayList<>();
+    List<Place> places = new ArrayList<>();
     for (Entity entity : results.asIterable()) {
       String placeQuery = (String) entity.getProperty("query");
-      places.add(placeQuery);
+      String comment = (String) entity.getProperty("comment");
+      places.add(new Place(placeQuery, comment));
     }
     return places;
   }
