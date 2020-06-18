@@ -22,7 +22,7 @@ import java.util.List;
 
 public final class FindMeetingQuery {
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
-  	/** General algorithm (first attempt, could be better optimized, generally runs in linear
+    /** General algorithm (first attempt, could be better optimized, generally runs in linear
      * time except for calls to Collections.disjoint() in the getAllRelevantEvents() method): 
      * 1. Get a list of all of the events which actually concern the attendees of the request.
      * 2. Sort the list by start time.
@@ -31,6 +31,7 @@ public final class FindMeetingQuery {
      * 4. Return a list of these times, only adding a time if it is longer than the proposed
      * duration of the MeetingRequest. 
      */
+
   	Collection<Event> relevantEvents = getAllRelevantEvents(events, request);
     List<TimeRange> busyTimes = getSortedTimeRanges(relevantEvents);
     return getComplementTimes(busyTimes, request);
@@ -66,14 +67,14 @@ public final class FindMeetingQuery {
   }
 
   /** Returns a Collection of only those times which do not overlap with any TimeRange in times */
-	private Collection<TimeRange> getComplementTimes(List<TimeRange> times, MeetingRequest request) {
+  private Collection<TimeRange> getComplementTimes(List<TimeRange> times, MeetingRequest request) {
     Collection<TimeRange> complementTimes = new ArrayList<>();
     if (times.size() == 0) {
       if (proposedTimeIsLongEnough(TimeRange.WHOLE_DAY, request)) {
         complementTimes.add(TimeRange.WHOLE_DAY);
       }
       return complementTimes;
-	  }
+    }
     // Add any time before the first event in the list
     if (! (TimeRange.START_OF_DAY == times.get(0).start())) {
       TimeRange proposedSlot = TimeRange.fromStartEnd(TimeRange.START_OF_DAY, times.get(0).start(), false);
