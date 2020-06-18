@@ -21,49 +21,46 @@ import java.util.HashSet;
 import java.util.List;
 
 public final class FindMeetingQuery {
-  public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
-    /** General algorithm (first attempt, could be better optimized, generally runs in linear
-     * time except for calls to Collections.disjoint() in the getAllRelevantEvents() method): 
-     * 1. Get a list of all of the events which actually concern the attendees of the request.
-     * 2. Sort the list by start time.
-     * 3. Loop through, and find all available times "between" these events; requires some amount
-     * of shifting around bounds to deal with edge cases regarding nested events.
-     * 4. Return a list of these times, only adding a time if it is longer than the proposed
-     * duration of the MeetingRequest. 
-     */
 
-  	Collection<Event> relevantEvents = getAllRelevantEvents(events, request);
-    List<TimeRange> busyTimes = getSortedTimeRanges(relevantEvents);
-    return getComplementTimes(busyTimes, request);
+  /** General algorithm (first attempt, could be better optimized, generally runs in linear
+   * time except for calls to Collections.disjoint() in the getAllRelevantEvents() method): 
+   * 1. Get a list of all of the events which actually concern the attendees of the request.
+   * 2. Sort the list by start time.
+   * 3. Loop through, and find all available times "between" these events; requires some amount
+   * of shifting around bounds to deal with edge cases regarding nested events.
+   * 4. Return a list of these times, only adding a time if it is longer than the proposed
+   * duration of the MeetingRequest. 
+   */
+  public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
+  	Collection<TimeRange> relevantTimes = getAllRelevantTimes(events, request);
+    List<TimeRange> sortedTimes = getSortedTimeRanges(relevantTimes);
+    return getComplementTimes(sortedTimes, request);
   }
 
   /**
    * Returns a Collection of only those events which have
    * attendees specified in the request parameter.
    */
-  private Collection<Event> getAllRelevantEvents(Collection<Event> events, MeetingRequest request) {
+  private Collection<TimeRange> getAllRelevantTimes(Collection<Event> events, MeetingRequest request) {
     Collection<String> attendees = request.getAttendees();
-    Collection<Event> relevantEvents = new HashSet<>();
+    Collection<TimeRange> relevantTimes = new HashSet<>(); // Prevent duplicate times.
     for (Event event : events) {
       Collection<String> eventAttendees = event.getAttendees();
       if (!Collections.disjoint(attendees, eventAttendees)) {
-        relevantEvents.add(event);
+        relevantTimes.add(event.getWhen());
       }
     }
-    return relevantEvents;
+    return relevantTimes;
   }
 
   /**
   * Returns a sorted (by start time) List<TimeRange> representing the Collection of events
-  * passed as a parameter. 
+  * passed as a parameter. It is necessary to convert to a list for use of the sort() method.
   */
-  private List<TimeRange> getSortedTimeRanges(Collection<Event> events) {
-    List<TimeRange> times = new ArrayList<>();
-    for (Event event : events) {
-      times.add(event.getWhen());
-    }
-    Collections.sort(times, TimeRange.ORDER_BY_START);
-    return times;
+  private List<TimeRange> getSortedTimeRanges(Collection<TimeRange> times) {
+    List<TimeRange> sortedTimes = new ArrayList<>(times);
+    Collections.sort(sortedTimes, TimeRange.ORDER_BY_START);
+    return sortedTimes;
   }
 
   /** Returns a Collection of only those times which do not overlap with any TimeRange in times */
