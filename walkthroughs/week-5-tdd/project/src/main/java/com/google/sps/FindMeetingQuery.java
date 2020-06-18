@@ -24,7 +24,7 @@ public final class FindMeetingQuery {
 
   /** General algorithm (first attempt, could be better optimized, generally runs in linear
    * time except for calls to Collections.disjoint() in the getAllRelevantEvents() method): 
-   * 1. Get a list of all of the events which actually concern the attendees of the request.
+   * 1. Get a list of all of the times when attendees are busy.
    * 2. Sort the list by start time.
    * 3. Loop through, and find all available times "between" these events; requires some amount
    * of shifting around bounds to deal with edge cases regarding nested events.
@@ -34,12 +34,12 @@ public final class FindMeetingQuery {
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
   	Collection<TimeRange> relevantTimes = getAllRelevantTimes(events, request);
     List<TimeRange> sortedTimes = getSortedTimeRanges(relevantTimes);
-    return getComplementTimes(sortedTimes, request);
+    return getNonOverlappingTimes(sortedTimes, request);
   }
 
   /**
-   * Returns a Collection of only those events which have
-   * attendees specified in the request parameter.
+   * Returns a Collection of only those TimeRanges which correspond to events
+   * with attendees common to the 'request' parameter.
    */
   private Collection<TimeRange> getAllRelevantTimes(Collection<Event> events, MeetingRequest request) {
     Collection<String> attendees = request.getAttendees();
@@ -63,35 +63,37 @@ public final class FindMeetingQuery {
     return sortedTimes;
   }
 
-  /** Returns a Collection of only those times which do not overlap with any TimeRange in times */
-  private Collection<TimeRange> getComplementTimes(List<TimeRange> times, MeetingRequest request) {
+  /** Returns a Collection of only those times which do not overlap with any TimeRange in 'times' */
+  private Collection<TimeRange> getNonOverlappingTimes(List<TimeRange> times, MeetingRequest request) {
     Collection<TimeRange> complementTimes = new ArrayList<>();
-    if (times.size() == 0) {
+    if (times.isEmpty()) {
       addIfProposedTimeIsLongEnough(TimeRange.WHOLE_DAY, request, complementTimes);
       return complementTimes;
     }
     // Add any time before the first event in the list
-    if (! (TimeRange.START_OF_DAY == times.get(0).start())) {
+    if (TimeRange.START_OF_DAY != times.get(0).start()) {
       TimeRange proposedSlot = TimeRange.fromStartEnd(TimeRange.START_OF_DAY, times.get(0).start(), false);
       addIfProposedTimeIsLongEnough(proposedSlot, request, complementTimes);
     }
     int i;
     int next;
-    for (i = 0, next=i+1; next < times.size(); i++, next++) {
+    for (i = 0, next = i+1; next < times.size(); i++, next++) {
       // If there is any space between the current time and the next time, add it to the list
       // Otherwise, keep current time the same until the "next" event is one not entirely contained in the current one 
       if (!times.get(i).overlaps(times.get(next))) {
         TimeRange proposedSlot = TimeRange.fromStartEnd(times.get(i).end(), times.get(next).start(), false);
         addIfProposedTimeIsLongEnough(proposedSlot, request, complementTimes);
-      } else if (times.get(i).contains(times.get(next))) {
+      }
+    	if (times.get(i).contains(times.get(next))) {
         i--;
         continue;
+      } else {
+        // Reset next to be event directly following current one, if next is not nested within the current event
+        next = i+1;
       }
-      // Reset next to be event directly following current one, if next is not nested within the current event
-      next = i+1;
     }
     // Add any time after the last time
-    if (! (TimeRange.END_OF_DAY == times.get(i).end())) {
+    if (TimeRange.END_OF_DAY != times.get(i).end()) {
       TimeRange proposedSlot = TimeRange.fromStartEnd(times.get(i).end(), TimeRange.END_OF_DAY, true);
      	addIfProposedTimeIsLongEnough(proposedSlot, request, complementTimes);
     }
