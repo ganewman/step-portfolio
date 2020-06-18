@@ -67,17 +67,13 @@ public final class FindMeetingQuery {
   private Collection<TimeRange> getComplementTimes(List<TimeRange> times, MeetingRequest request) {
     Collection<TimeRange> complementTimes = new ArrayList<>();
     if (times.size() == 0) {
-      if (proposedTimeIsLongEnough(TimeRange.WHOLE_DAY, request)) {
-        complementTimes.add(TimeRange.WHOLE_DAY);
-      }
+      addIfProposedTimeIsLongEnough(TimeRange.WHOLE_DAY, request, complementTimes);
       return complementTimes;
     }
     // Add any time before the first event in the list
     if (! (TimeRange.START_OF_DAY == times.get(0).start())) {
       TimeRange proposedSlot = TimeRange.fromStartEnd(TimeRange.START_OF_DAY, times.get(0).start(), false);
-        if (proposedTimeIsLongEnough(proposedSlot, request)) {
-          complementTimes.add(proposedSlot);
-        }
+      addIfProposedTimeIsLongEnough(proposedSlot, request, complementTimes);
     }
     int i;
     int next;
@@ -86,9 +82,7 @@ public final class FindMeetingQuery {
       // Otherwise, keep current time the same until the "next" event is one not entirely contained in the current one 
       if (!times.get(i).overlaps(times.get(next))) {
         TimeRange proposedSlot = TimeRange.fromStartEnd(times.get(i).end(), times.get(next).start(), false);
-        if (proposedTimeIsLongEnough(proposedSlot, request)) {
-          complementTimes.add(proposedSlot);
-        }
+        addIfProposedTimeIsLongEnough(proposedSlot, request, complementTimes);
       } else if (times.get(i).contains(times.get(next))) {
         i--;
         continue;
@@ -99,15 +93,16 @@ public final class FindMeetingQuery {
     // Add any time after the last time
     if (! (TimeRange.END_OF_DAY == times.get(i).end())) {
       TimeRange proposedSlot = TimeRange.fromStartEnd(times.get(i).end(), TimeRange.END_OF_DAY, true);
-      if (proposedTimeIsLongEnough(proposedSlot, request)) {
-        complementTimes.add(proposedSlot);
-      }
+     	addIfProposedTimeIsLongEnough(proposedSlot, request, complementTimes);
     }
     return complementTimes;
   }
 
-  private boolean proposedTimeIsLongEnough(TimeRange proposedTime, MeetingRequest request) {
-    return proposedTime.duration() >= request.getDuration();
+  private void addIfProposedTimeIsLongEnough(TimeRange proposedTime,
+  	  MeetingRequest request, Collection<TimeRange> times) {
+    if (proposedTime.duration() >= request.getDuration()) {
+      times.add(proposedTime);
+    }
   }
 	
 }
