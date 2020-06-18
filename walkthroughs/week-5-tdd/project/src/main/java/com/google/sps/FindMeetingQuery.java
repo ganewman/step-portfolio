@@ -31,17 +31,35 @@ public final class FindMeetingQuery {
      * 4. Return a list of these times, only adding a time if it is longer than the proposed
      * duration of the MeetingRequest. 
      */
-  	Collection<Event> relevantEvents = getAllRelevantEvents(events, request);
+     
+    // Run the algorithm the first time also including optional attendees
+  	Collection<Event> relevantEvents = getAllRelevantEvents(events, request, true);
     List<TimeRange> busyTimes = getSortedTimeRanges(relevantEvents);
-    return getComplementTimes(busyTimes, request);
+    Collection<TimeRange> proposedSolution = getComplementTimes(busyTimes, request);
+
+    // If there is no current solution and running the algorithm again without optional attendees
+    // has the possibility of finding a solution, do so.
+    if (proposedSolution.isEmpty() && !request.getAttendees().isEmpty() &&
+        !request.getOptionalAttendees().isEmpty()) {
+      relevantEvents = getAllRelevantEvents(events, request, false);
+      busyTimes = getSortedTimeRanges(relevantEvents);
+      proposedSolution = getComplementTimes(busyTimes, request);
+    }
+    return proposedSolution;
   }
 
   /**
    * Returns a Collection of only those events which have
    * attendees specified in the request parameter.
    */
-  private Collection<Event> getAllRelevantEvents(Collection<Event> events, MeetingRequest request) {
-    Collection<String> attendees = request.getAttendees();
+  private Collection<Event> getAllRelevantEvents(Collection<Event> events, MeetingRequest request,
+  	  boolean includeOptional) {
+    // Make a copy of the attendees list which can be modified to add optional attendees if need be
+    Collection<String> attendees = new HashSet<>(request.getAttendees());
+    if (includeOptional) {
+      Collection<String> optionalAttendees = request.getOptionalAttendees();
+      attendees.addAll(optionalAttendees);
+    }
     Collection<Event> relevantEvents = new HashSet<>();
     for (Event event : events) {
       Collection<String> eventAttendees = event.getAttendees();
