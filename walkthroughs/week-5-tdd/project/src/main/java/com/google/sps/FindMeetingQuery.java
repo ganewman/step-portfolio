@@ -32,7 +32,7 @@ public final class FindMeetingQuery {
    * duration of the MeetingRequest. 
    */
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
-  	Collection<TimeRange> relevantTimes = getAllRelevantTimes(events, request);
+    Collection<TimeRange> relevantTimes = getAllRelevantTimes(events, request);
     List<TimeRange> sortedTimes = getSortedTimeRanges(relevantTimes);
     return getNonOverlappingTimes(sortedTimes, request);
   }
@@ -63,7 +63,7 @@ public final class FindMeetingQuery {
     return sortedTimes;
   }
 
-  /** Returns a Collection of only those times which do not overlap with any TimeRange in 'times' */
+  /** Returns a Collection of only those times which do not overlap with any TimeRange in 'times'. */
   private Collection<TimeRange> getNonOverlappingTimes(List<TimeRange> times, MeetingRequest request) {
     Collection<TimeRange> complementTimes = new ArrayList<>();
     if (times.isEmpty()) {
