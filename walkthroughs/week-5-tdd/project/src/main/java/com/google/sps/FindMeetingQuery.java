@@ -75,25 +75,25 @@ public final class FindMeetingQuery {
       TimeRange proposedSlot = TimeRange.fromStartEnd(TimeRange.START_OF_DAY, times.get(0).start(), false);
       addIfProposedTimeIsLongEnough(proposedSlot, request, complementTimes);
     }
-    int i = 0;
+    int current = 0;
     int next = 1;
     while (next < times.size()) {
       // If there is any space between the current time and the next time, add it to the list
       // Otherwise, keep current time the same until the "next" event is one not entirely contained in the current one 
-      if (!times.get(i).overlaps(times.get(next))) {
-        TimeRange proposedSlot = TimeRange.fromStartEnd(times.get(i).end(), times.get(next).start(), false);
+      if (!times.get(current).overlaps(times.get(next))) {
+        TimeRange proposedSlot = TimeRange.fromStartEnd(times.get(current).end(), times.get(next).start(), false);
         addIfProposedTimeIsLongEnough(proposedSlot, request, complementTimes);
       }
-    	if (! times.get(i).contains(times.get(next))) {
-        i++;
+    	if (!times.get(current).contains(times.get(next))) {
+        current++;
         // Reset next to be event directly following current one, if next is not nested within the current event
-        next = i+1;
+        next = current + 1;
       }
       next++;
     }
     // Add any time after the last time
-    if (TimeRange.END_OF_DAY != times.get(i).end()) {
-      TimeRange proposedSlot = TimeRange.fromStartEnd(times.get(i).end(), TimeRange.END_OF_DAY, true);
+    if (TimeRange.END_OF_DAY != times.get(current).end()) {
+      TimeRange proposedSlot = TimeRange.fromStartEnd(times.get(current).end(), TimeRange.END_OF_DAY, true);
      	addIfProposedTimeIsLongEnough(proposedSlot, request, complementTimes);
     }
     return complementTimes;
