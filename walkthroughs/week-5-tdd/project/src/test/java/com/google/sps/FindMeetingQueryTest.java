@@ -272,8 +272,8 @@ public final class FindMeetingQueryTest {
     Assert.assertEquals(expected, actual);
   }
 
-    @Test
-  public void nestedEventsNonNestedFollows() {
+  @Test
+  public void nestedEventsFollowedByNonNested() {
     // Have an event for each person, but have one person's event fully contain another's event. Then,
     // have a gap before a final event. We should see three options.
     //
@@ -298,7 +298,6 @@ public final class FindMeetingQueryTest {
         Arrays.asList(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, TIME_0830AM, false),
             TimeRange.fromStartEnd(TIME_1000AM, TIME_1100AM, false), 
             TimeRange.fromStartEnd(TIME_1200PM, TimeRange.END_OF_DAY, true));
-
     Assert.assertEquals(expected, actual);
   }
 
