@@ -85,9 +85,7 @@ public final class FindMeetingQuery {
         addIfProposedTimeIsLongEnough(proposedSlot, request, complementTimes);
       }
     	if (!times.get(current).contains(times.get(next))) {
-        current++;
-        // Reset next to be event directly following current one, if next is not nested within the current event
-        next = current + 1;
+        current = next;
       }
       next++;
     }

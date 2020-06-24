@@ -42,6 +42,7 @@ public final class FindMeetingQueryTest {
   private static final int TIME_0930AM = TimeRange.getTimeInMinutes(9, 30);
   private static final int TIME_1000AM = TimeRange.getTimeInMinutes(10, 0);
   private static final int TIME_1100AM = TimeRange.getTimeInMinutes(11, 00);
+  private static final int TIME_1200PM = TimeRange.getTimeInMinutes(12, 00);
 
   private static final int DURATION_30_MINUTES = 30;
   private static final int DURATION_60_MINUTES = 60;
@@ -270,5 +271,36 @@ public final class FindMeetingQueryTest {
 
     Assert.assertEquals(expected, actual);
   }
+
+    @Test
+  public void nestedEventsNonNestedFollows() {
+    // Have an event for each person, but have one person's event fully contain another's event. We
+    // should see two options.
+    //
+    // Events  :     |----A----|   |-C-|
+    //                  |--B--|
+    // Day     : |---------------------|
+    // Options : |--1--|         |--2--|
+
+    Collection<Event> events = Arrays.asList(
+        new Event("Event 1", TimeRange.fromStartDuration(TIME_0830AM, DURATION_90_MINUTES),
+            Arrays.asList(PERSON_A)),
+        new Event("Event 2", TimeRange.fromStartDuration(TIME_0900AM, DURATION_30_MINUTES),
+            Arrays.asList(PERSON_B)),
+        new Event("Event 3", TimeRange.fromStartDuration(TIME_1100AM, DURATION_1_HOUR),
+          Arrays.asList(PERSON_B)));
+
+    MeetingRequest request =
+        new MeetingRequest(Arrays.asList(PERSON_A, PERSON_B), DURATION_30_MINUTES);
+
+    Collection<TimeRange> actual = query.query(events, request);
+    Collection<TimeRange> expected =
+        Arrays.asList(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, TIME_0830AM, false),
+            TimeRange.fromStartEnd(TIME_1000AM, TIME_1100AM, false), 
+            TimeRange.fromStartEnd(TIME_1200PM, TimeRange.END_OF_DAY, true));
+
+    Assert.assertEquals(expected, actual);
+  }
+
 }
 
