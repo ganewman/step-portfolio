@@ -130,7 +130,7 @@ public final class FindMeetingQueryTest {
     // split the restricted times.
     //
     // Events  :       |--A--|     |--B--|
-    //           |-------------C---------------| (optional)
+    // (Optional)|-------------C---------------|
     // Day     : |-----------------------------|
     // Options : |--1--|     |--2--|     |--3--| (ignore optional here, as there are no slots)
 
@@ -159,7 +159,8 @@ public final class FindMeetingQueryTest {
     // Have each person have different events. We should see two options because each person has
     // split the restricted times.
     //
-    // Events  :       |--A--|--C--|--B--|
+    // Events  :       |--A--|     |--B--|
+    //(Optional)             |--C--|
     // Day     : |-----------------------------|
     // Options : |--1--|    (|--2--|)    |--3--|
 
@@ -290,7 +291,8 @@ public final class FindMeetingQueryTest {
     // Have one person, but make it so that there is just enough room at one point in the day to
     // have the meeting.
     //
-    // Events  : |--A--|-B-| |----A----|
+    // Events  : |--A--|     |----A----|
+    // (Optional)      |-B-|
     // Day     : |---------------------|
     // Options :       |-----| (ignore optional attendee B)
 
