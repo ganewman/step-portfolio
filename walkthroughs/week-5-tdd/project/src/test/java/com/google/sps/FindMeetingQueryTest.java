@@ -43,6 +43,7 @@ public final class FindMeetingQueryTest {
   private static final int TIME_0930AM = TimeRange.getTimeInMinutes(9, 30);
   private static final int TIME_1000AM = TimeRange.getTimeInMinutes(10, 0);
   private static final int TIME_1100AM = TimeRange.getTimeInMinutes(11, 00);
+  private static final int TIME_1200PM = TimeRange.getTimeInMinutes(12, 00);
 
   private static final int DURATION_15_MINUTES = 15;
   private static final int DURATION_30_MINUTES = 30;
@@ -123,7 +124,7 @@ public final class FindMeetingQueryTest {
     Assert.assertEquals(expected, actual);
   }
 
-    @Test
+  @Test
   public void everyAttendeeIsConsideredIgnoreOptional() {
     // Have each person have different events. We should see two options because each person has
     // split the restricted times.
@@ -153,7 +154,7 @@ public final class FindMeetingQueryTest {
     Assert.assertEquals(expected, actual);
   }
 
-    @Test
+  @Test
   public void everyAttendeeIsConsideredPlusOptional() {
     // Have each person have different events. We should see two options because each person has
     // split the restricted times.
@@ -284,7 +285,7 @@ public final class FindMeetingQueryTest {
     Assert.assertEquals(expected, actual);
   }
 
-    @Test
+  @Test
   public void justEnoughRoomIgnoreOptional() {
     // Have one person, but make it so that there is just enough room at one point in the day to
     // have the meeting.
@@ -360,7 +361,7 @@ public final class FindMeetingQueryTest {
     Assert.assertEquals(expected, actual);
   }
 
-    @Test
+  @Test
   public void onlyOptionalAttendees() {
     // Have an event for each person, but have their events overlap. We should only see two options.
     //
@@ -388,7 +389,37 @@ public final class FindMeetingQueryTest {
     Assert.assertEquals(expected, actual);
   }
 
-    @Test
+  @Test
+  public void nestedEventsFollowedByNonNested() {
+    // Have an event for each person, but have one person's event fully contain another's event. Then,
+    // have a gap before a final event. We should see three options.
+    //
+    // Events  :      |----A----|   |-C-|
+    //                  |--B--|
+    // Day     : |---------------------------|
+    // Options : |-1-|          |-2-|    |-3-|
+
+    Collection<Event> events = Arrays.asList(
+        new Event("Event 1", TimeRange.fromStartDuration(TIME_0830AM, DURATION_90_MINUTES),
+            Arrays.asList(PERSON_A)),
+        new Event("Event 2", TimeRange.fromStartDuration(TIME_0900AM, DURATION_30_MINUTES),
+            Arrays.asList(PERSON_B)),
+        new Event("Event 3", TimeRange.fromStartDuration(TIME_1100AM, DURATION_1_HOUR),
+          Arrays.asList(PERSON_B)));
+
+    MeetingRequest request =
+        new MeetingRequest(Arrays.asList(PERSON_A, PERSON_B), DURATION_30_MINUTES);
+
+    Collection<TimeRange> actual = query.query(events, request);
+    Collection<TimeRange> expected =
+        Arrays.asList(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, TIME_0830AM, false),
+            TimeRange.fromStartEnd(TIME_1000AM, TIME_1100AM, false), 
+            TimeRange.fromStartEnd(TIME_1200PM, TimeRange.END_OF_DAY, true));
+    Assert.assertEquals(expected, actual);
+  }
+
+
+  @Test
   public void justOptionalAttendeesNoRoom() {
     // Have two optional attendees, but no mandatory, and make it so that there is not enough
     // room at any point in the day to have the meeting.

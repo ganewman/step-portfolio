@@ -21,6 +21,16 @@ import java.util.HashSet;
 import java.util.List;
 
 public final class FindMeetingQuery {
+
+  /** General algorithm (first attempt, could be better optimized, generally runs in linear
+   * time except for calls to Collections.disjoint() in the getAllRelevantEvents() method): 
+   * 1. Get a list of all of the times when attendees are busy.
+   * 2. Sort the list by start time.
+   * 3. Loop through, and find all available times "between" these events; requires some amount
+   * of shifting around bounds to deal with edge cases regarding nested events.
+   * 4. Return a list of these times, only adding a time if it is longer than the proposed
+   * duration of the MeetingRequest. 
+   */
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
   	/** General algorithm (first attempt, could be better optimized, generally runs in linear
      * time except for calls to Collections.disjoint() in the getAllRelevantEvents() method): 
@@ -33,101 +43,94 @@ public final class FindMeetingQuery {
      */
      
     // Run the algorithm the first time also including optional attendees
-  	Collection<Event> relevantEvents = getAllRelevantEvents(events, request, true);
-    List<TimeRange> busyTimes = getSortedTimeRanges(relevantEvents);
-    Collection<TimeRange> proposedSolution = getComplementTimes(busyTimes, request);
+  	Collection<TimeRange> relevantTimes = getAllRelevantEvents(events, request, true);
+    List<TimeRange> sortedTimes = sortTimesByStart(relevantTimes);
+    Collection<TimeRange> proposedSolution = getNonOverlappingTimes(sortedTimes, request);
 
     // If there is no current solution and running the algorithm again without optional attendees
     // has the possibility of finding a solution, do so.
     if (proposedSolution.isEmpty() && !request.getAttendees().isEmpty() &&
         !request.getOptionalAttendees().isEmpty()) {
-      relevantEvents = getAllRelevantEvents(events, request, false);
-      busyTimes = getSortedTimeRanges(relevantEvents);
-      proposedSolution = getComplementTimes(busyTimes, request);
+      relevantTimes = getAllRelevantEvents(events, request, false);
+      sortedTimes = sortTimesByStart(relevantTimes);
+      proposedSolution = getNonOverlappingTimes(sortedTimes, request);
     }
     return proposedSolution;
   }
 
   /**
-   * Returns a Collection of only those events which have
-   * attendees specified in the request parameter.
+   * Returns a Collection of only those TimeRanges which correspond to events
+   * with attendees common to the 'request' parameter.
+   * @param includeOptional indicates whether to also consider the optional attendees of
+   * the MeetingRequest.
    */
-  private Collection<Event> getAllRelevantEvents(Collection<Event> events, MeetingRequest request,
+  private Collection<TimeRange> getAllRelevantEvents(Collection<Event> events, MeetingRequest request,
   	  boolean includeOptional) {
     // Make a copy of the attendees list which can be modified to add optional attendees if need be
     Collection<String> attendees = new HashSet<>(request.getAttendees());
+    Collection<TimeRange> relevantTimes = new HashSet<>(); // Prevent duplicate times.
     if (includeOptional) {
       Collection<String> optionalAttendees = request.getOptionalAttendees();
       attendees.addAll(optionalAttendees);
     }
-    Collection<Event> relevantEvents = new HashSet<>();
     for (Event event : events) {
       Collection<String> eventAttendees = event.getAttendees();
       if (!Collections.disjoint(attendees, eventAttendees)) {
-        relevantEvents.add(event);
+        relevantTimes.add(event.getWhen());
       }
     }
-    return relevantEvents;
+    return relevantTimes;
   }
 
   /**
   * Returns a sorted (by start time) List<TimeRange> representing the Collection of events
-  * passed as a parameter. 
+  * passed as a parameter. It is necessary to convert to a list for use of the sort() method.
   */
-  private List<TimeRange> getSortedTimeRanges(Collection<Event> events) {
-    List<TimeRange> times = new ArrayList<>();
-    for (Event event : events) {
-      times.add(event.getWhen());
-    }
-    Collections.sort(times, TimeRange.ORDER_BY_START);
-    return times;
+  private List<TimeRange> sortTimesByStart(Collection<TimeRange> times) {
+    List<TimeRange> sortedTimes = new ArrayList<>(times);
+    Collections.sort(sortedTimes, TimeRange.ORDER_BY_START);
+    return sortedTimes;
   }
 
-  /** Returns a Collection of only those times which do not overlap with any TimeRange in times */
-	private Collection<TimeRange> getComplementTimes(List<TimeRange> times, MeetingRequest request) {
+  /** Returns a Collection of only those times which do not overlap with any TimeRange in 'times'. */
+  private Collection<TimeRange> getNonOverlappingTimes(List<TimeRange> times, MeetingRequest request) {
     Collection<TimeRange> complementTimes = new ArrayList<>();
-    if (times.size() == 0) {
-      if (proposedTimeIsLongEnough(TimeRange.WHOLE_DAY, request)) {
-        complementTimes.add(TimeRange.WHOLE_DAY);
-      }
+    if (times.isEmpty()) {
+      addIfProposedTimeIsLongEnough(TimeRange.WHOLE_DAY, request, complementTimes);
       return complementTimes;
-	  }
-    // Add any time before the first event in the list
-    if (! (TimeRange.START_OF_DAY == times.get(0).start())) {
-      TimeRange proposedSlot = TimeRange.fromStartEnd(TimeRange.START_OF_DAY, times.get(0).start(), false);
-        if (proposedTimeIsLongEnough(proposedSlot, request)) {
-          complementTimes.add(proposedSlot);
-        }
     }
-    int i;
-    int next;
-    for (i = 0, next=i+1; next < times.size(); i++, next++) {
+    // Add any time before the first event in the list
+    if (TimeRange.START_OF_DAY != times.get(0).start()) {
+      TimeRange proposedSlot = TimeRange.fromStartEnd(TimeRange.START_OF_DAY, times.get(0).start(), false);
+      addIfProposedTimeIsLongEnough(proposedSlot, request, complementTimes);
+    }
+    int current = 0;
+    int next = 1;
+    while (next < times.size()) {
       // If there is any space between the current time and the next time, add it to the list
       // Otherwise, keep current time the same until the "next" event is one not entirely contained in the current one 
-      if (!times.get(i).overlaps(times.get(next))) {
-        TimeRange proposedSlot = TimeRange.fromStartEnd(times.get(i).end(), times.get(next).start(), false);
-        if (proposedTimeIsLongEnough(proposedSlot, request)) {
-          complementTimes.add(proposedSlot);
-        }
-      } else if (times.get(i).contains(times.get(next))) {
-        i--;
-        continue;
+      if (!times.get(current).overlaps(times.get(next))) {
+        TimeRange proposedSlot = TimeRange.fromStartEnd(times.get(current).end(), times.get(next).start(), false);
+        addIfProposedTimeIsLongEnough(proposedSlot, request, complementTimes);
       }
-      // Reset next to be event directly following current one, if next is not nested within the current event
-      next = i+1;
+    	if (!times.get(current).contains(times.get(next))) {
+        current = next;
+      }
+      next++;
     }
     // Add any time after the last time
-    if (! (TimeRange.END_OF_DAY == times.get(i).end())) {
-      TimeRange proposedSlot = TimeRange.fromStartEnd(times.get(i).end(), TimeRange.END_OF_DAY, true);
-      if (proposedTimeIsLongEnough(proposedSlot, request)) {
-        complementTimes.add(proposedSlot);
-      }
+    if (TimeRange.END_OF_DAY != times.get(current).end()) {
+      TimeRange proposedSlot = TimeRange.fromStartEnd(times.get(current).end(), TimeRange.END_OF_DAY, true);
+     	addIfProposedTimeIsLongEnough(proposedSlot, request, complementTimes);
     }
     return complementTimes;
   }
 
-  private boolean proposedTimeIsLongEnough(TimeRange proposedTime, MeetingRequest request) {
-    return proposedTime.duration() >= request.getDuration();
+  private void addIfProposedTimeIsLongEnough(TimeRange proposedTime,
+  	  MeetingRequest request, Collection<TimeRange> times) {
+    if (proposedTime.duration() >= request.getDuration()) {
+      times.add(proposedTime);
+    }
   }
 	
 }
