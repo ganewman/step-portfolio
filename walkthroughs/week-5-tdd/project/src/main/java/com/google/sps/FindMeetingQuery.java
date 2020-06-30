@@ -32,18 +32,38 @@ public final class FindMeetingQuery {
    * duration of the MeetingRequest. 
    */
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
-    Collection<TimeRange> relevantTimes = getAllRelevantTimes(events, request);
-    List<TimeRange> sortedTimes = getSortedTimeRanges(relevantTimes);
-    return getNonOverlappingTimes(sortedTimes, request);
+    // Run the algorithm the first time also including optional attendees.
+    boolean includeOptional = true;
+    Collection<TimeRange> relevantTimes = getAllRelevantEvents(events, request, includeOptional);
+    List<TimeRange> sortedTimes = sortTimesByStart(relevantTimes);
+    Collection<TimeRange> proposedSolution = getNonOverlappingTimes(sortedTimes, request);
+
+    // If there is no current solution and running the algorithm again without optional attendees
+    // has the possibility of finding a solution, do so.
+    if (proposedSolution.isEmpty() && !request.getAttendees().isEmpty() &&
+        !request.getOptionalAttendees().isEmpty()) {
+      includeOptional = false;
+      relevantTimes = getAllRelevantEvents(events, request, includeOptional);
+      sortedTimes = sortTimesByStart(relevantTimes);
+      proposedSolution = getNonOverlappingTimes(sortedTimes, request);
+    }
+    return proposedSolution;
   }
 
   /**
    * Returns a Collection of only those TimeRanges which correspond to events
    * with attendees common to the 'request' parameter.
+   * @param includeOptional indicates whether to also consider the optional attendees of
+   * the MeetingRequest.
    */
-  private Collection<TimeRange> getAllRelevantTimes(Collection<Event> events, MeetingRequest request) {
-    Collection<String> attendees = request.getAttendees();
+  private Collection<TimeRange> getAllRelevantEvents(Collection<Event> events, MeetingRequest request,
+      boolean includeOptional) {
+    // Make a copy of the attendees list which can be modified to add optional attendees if need be.
+    Collection<String> attendees = new HashSet<>(request.getAttendees());
     Collection<TimeRange> relevantTimes = new HashSet<>(); // Prevent duplicate times.
+    if (includeOptional) {
+      attendees.addAll(request.getOptionalAttendees());
+    }
     for (Event event : events) {
       Collection<String> eventAttendees = event.getAttendees();
       if (!Collections.disjoint(attendees, eventAttendees)) {
@@ -57,7 +77,7 @@ public final class FindMeetingQuery {
   * Returns a sorted (by start time) List<TimeRange> representing the Collection of events
   * passed as a parameter. It is necessary to convert to a list for use of the sort() method.
   */
-  private List<TimeRange> getSortedTimeRanges(Collection<TimeRange> times) {
+  private List<TimeRange> sortTimesByStart(Collection<TimeRange> times) {
     List<TimeRange> sortedTimes = new ArrayList<>(times);
     Collections.sort(sortedTimes, TimeRange.ORDER_BY_START);
     return sortedTimes;
@@ -70,7 +90,7 @@ public final class FindMeetingQuery {
       addIfProposedTimeIsLongEnough(TimeRange.WHOLE_DAY, request, complementTimes);
       return complementTimes;
     }
-    // Add any time before the first event in the list
+    // Add any time before the first event in the list.
     if (TimeRange.START_OF_DAY != times.get(0).start()) {
       TimeRange proposedSlot = TimeRange.fromStartEnd(TimeRange.START_OF_DAY, times.get(0).start(), false);
       addIfProposedTimeIsLongEnough(proposedSlot, request, complementTimes);
@@ -78,8 +98,8 @@ public final class FindMeetingQuery {
     int current = 0;
     int next = 1;
     while (next < times.size()) {
-      // If there is any space between the current time and the next time, add it to the list
-      // Otherwise, keep current time the same until the "next" event is one not entirely contained in the current one 
+      // If there is any space between the current time and the next time, add it to the list.
+      // Otherwise, keep current time the same until the "next" event is one not entirely contained in the current one.
       if (!times.get(current).overlaps(times.get(next))) {
         TimeRange proposedSlot = TimeRange.fromStartEnd(times.get(current).end(), times.get(next).start(), false);
         addIfProposedTimeIsLongEnough(proposedSlot, request, complementTimes);
@@ -89,7 +109,7 @@ public final class FindMeetingQuery {
       }
       next++;
     }
-    // Add any time after the last time
+    // Add any time after the last time.
     if (TimeRange.END_OF_DAY != times.get(current).end()) {
       TimeRange proposedSlot = TimeRange.fromStartEnd(times.get(current).end(), TimeRange.END_OF_DAY, true);
      	addIfProposedTimeIsLongEnough(proposedSlot, request, complementTimes);
